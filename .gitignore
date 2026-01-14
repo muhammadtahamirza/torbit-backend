@@ -1,0 +1,10 @@
+# Ignore the heavy modules folder
+node_modules/
+
+# Ignore your secrets
+.env
+
+# Ignore system files
+.DS_Store
+dist/
+build/
