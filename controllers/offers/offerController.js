@@ -4,7 +4,6 @@ const { pool } = require("../../config/db.js");
 //0: get profile
 const getUserProfile = async (req, res) => {
   try {
-    // ✅ THE BASIS: req.user.user_id comes from the decoded JWT Token
     const user = await pool.query(
       "SELECT name, email, contact, gender FROM users WHERE user_id = $1",
       [req.user.user_id] 
@@ -56,12 +55,16 @@ const getMyOffers = async (req, res) => {
 // 3. GET /offers (Public Feed - Browse Page)
 const getAllOffers = async (req, res) => {
   try {
-    // ✅ UDPATED: Fetch 'users.contact' so we can link to WhatsApp
+    // ✅ UPDATED: Added users.email AS driver_email
     const offers = await pool.query(
-      `SELECT offers.*, users.name as driver_name, users.contact as driver_contact 
+      `SELECT 
+          offers.*, 
+          users.name as driver_name, 
+          users.contact as driver_contact,
+          users.email as driver_email 
        FROM offers 
        JOIN users ON offers.owner_id = users.user_id 
-       ORDER BY created_at DESC`
+       ORDER BY offers.created_at DESC`
     );
     res.json(offers.rows);
   } catch (err) {
@@ -69,7 +72,6 @@ const getAllOffers = async (req, res) => {
     res.status(500).json("Server Error");
   }
 };
-
 // 4. GET /offers/:id (Single View)
 const getOfferById = async (req, res) => {
   const { id } = req.params;
