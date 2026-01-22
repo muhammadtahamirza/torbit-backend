@@ -16,7 +16,7 @@ router.post("/wanted-request/post", verifyToken, postWantedRide);
 router.put("/wanted-request/edit/:id", verifyToken, updateWantedRide);
 
 // Browsing (For Drivers)
-router.get("/wanted-request/browse", verifyToken, browseWantedRides);
+router.get("/wanted-request/browse", browseWantedRides);
 
 // Interactions (The Request Flow)
 router.post("/wanted-request/send", verifyToken, sendRideRequest);
