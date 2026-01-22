@@ -50,7 +50,6 @@ const browseWantedRides = async (req, res) => {
                 u.email as student_email
              FROM wanted_rides wr 
              JOIN users u ON wr.student_id = u.user_id 
-             WHERE wr.status = 'active' 
              ORDER BY wr.created_at DESC`
         );
         res.json(result.rows);

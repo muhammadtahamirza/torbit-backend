@@ -9,27 +9,21 @@ const getProfile = async (req, res) => {
       [userId]
     );
     
-    if (result.rows.length === 0) {
-      return res.status(404).json("User not found");
-    }
+    if (result.rows.length === 0) return res.status(404).json("User not found");
 
     const user = result.rows[0];
 
-    // Completion Logic: 5 steps = 20% each
+    // Score logic (Each step = 20%)
     let score = 0;
     if (user.name) score += 20;
+    if (user.email) score += 20;
     if (user.contact) score += 20;
     if (user.gender) score += 20;
-    if (user.google_id) score += 20;
-    
-    // Safety check: ensure email exists before calling toLowerCase/endsWith
-    if (user.email && user.email.toLowerCase().endsWith("nu.edu.pk")) {
-      score += 20;
-    }
+    if (user.email && user.email.toLowerCase().endsWith("nu.edu.pk")) score += 20;
 
-    res.json({ ...user, completionPercentage: score });
+    // ✅ Match frontend key: completion_percentage
+    res.json({ ...user, completion_percentage: score });
   } catch (err) {
-    console.error("Get Profile Error:", err.message);
     res.status(500).json("Server Error");
   }
 };
