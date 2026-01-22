@@ -13,7 +13,7 @@ const { completeProfile } = require("../controllers/auth/complete.js");
 const { auth } = require("google-auth-library");
 
 
-router.get("/profile", authenticate, getUserProfile);
+router.get("/user/profile", authenticate, getUserProfile);
 
 // PUT /users/complete-profile
 router.put("/complete-profile", authenticate, completeProfile);
@@ -25,7 +25,5 @@ router.post("/offers", authenticate, createOffer);
 router.get("/offers/:id", getOfferById);
 
 router.put("/offers/:id", authenticate, updateOffer);
-
-router.delete("/offers/:id", authenticate, deleteOffer);
 
 module.exports = router;
