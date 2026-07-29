@@ -1,12 +1,14 @@
 const bcrypt = require("bcrypt");
 const { pool, transporter } = require("../../config/db.js");
+// NOTE: Have to move from calling direct queries to using ORM for database quries, it prevents security risks, for details search: sql injectoin
 
 const signup = async (req, res) => {
-  // ✅ 1. Accept name and gender
-  const { name, email, password, gender , contact} = req.body; 
+  //  1. Accept name and gender
+  const { name, email, password, gender , contact} = req.body;
 
   try {
     // 2. Check if a VERIFIED user already exists
+			// TODO: replace with ORM prisma query
     const userCheck = await pool.query("SELECT * FROM users WHERE email = $1", [email]);
     if (userCheck.rows.length > 0 && userCheck.rows[0].is_verified) {
       return res.status(400).json("User already exists. Please login.");
@@ -14,24 +16,34 @@ const signup = async (req, res) => {
 
     // 3. Generate Logic (OTP & Hash)
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    const expiry = new Date(Date.now() + 10 * 60000); 
+    const expiry = new Date(Date.now() + 10 * 60000);
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
     // ✅ 4. DB Query (Updated to include Name & Gender)
+		// TODO: replace with ORM prisma query
     await pool.query(
       `INSERT INTO users (email, password, otp_code, otp_expiry, is_verified, name, gender, contact)
        VALUES ($1, $2, $3, $4, FALSE, $5, $6, $7)
-       ON CONFLICT (email) DO UPDATE 
-       SET password = $2, 
-           otp_code = $3, 
-           otp_expiry = $4, 
+       ON CONFLICT (email) DO UPDATE
+       SET password = $2,
+           otp_code = $3,
+           otp_expiry = $4,
            is_verified = FALSE,
            name = $5,     -- Update name on retry
            gender = $6,    -- Update gender on retry
            contact = $7`,
-      [email, hashedPassword, otp, expiry, name, gender, contact] 
+      [email, hashedPassword, otp, expiry, name, gender, contact]
     );
+	// uNOTE: se the dev mode in .env for bypassing otp for creating files in development
+	if (process.env.NODE_ENV === 'development') {
+      console.log(`\n=================================================`);
+      console.log(`[DEV MODE] Email dispatch bypassed for: ${email}`);
+      console.log(` Verification OTP code for ${name}: ${otp}`);
+      console.log(`=================================================\n`);
+
+      return res.json({ message: "OTP sent to email (Check terminal log for code)" });
+    }
 
     // 5. Email
     console.log(`Sending OTP to ${email}...`);
@@ -50,7 +62,7 @@ const signup = async (req, res) => {
     });
 
     console.log('OTP sent successfully');
-    
+
     res.json({ message: "OTP sent to email" });
   } catch (err) {
     console.error("Signup Error:", err);

@@ -1,14 +1,17 @@
 const { pool } = require("../config/db.js");
 
+// NOTE: Have to move from calling direct queries to using ORM for database quries, it prevents security risks, for details search: sql injectoin
+
 // API 1: Fetch Profile & Calculate Completion
 const getProfile = async (req, res) => {
   const userId = req.user.user_id;
   try {
+		// TODO: replace with ORM prisma query
     const result = await pool.query(
-      "SELECT name, email, contact, gender, google_id FROM users WHERE user_id = $1", 
+      "SELECT name, email, contact, gender, google_id FROM users WHERE user_id = $1",
       [userId]
     );
-    
+
     if (result.rows.length === 0) return res.status(404).json("User not found");
 
     const user = result.rows[0];
@@ -34,6 +37,7 @@ const updateProfile = async (req, res) => {
   const userId = req.user.user_id;
 
   try {
+		// TODO: replace with ORM prisma query
     const result = await pool.query(
       "UPDATE users SET name = $1, contact = $2, gender = $3 WHERE user_id = $4",
       [name, contact, gender, userId]

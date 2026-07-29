@@ -1,11 +1,15 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { pool } = require("../../config/db.js");
+// NOTE: Have to move from calling direct queries to using ORM for database quries, it prevents security risks, for details search: sql injectoin
+
+
 
 const login = async (req, res) => {
   const { email, password } = req.body;
 
   try {
+			// TODO: replace with ORM prisma query
     const userResult = await pool.query("SELECT * FROM users WHERE email = $1", [email]);
     if (userResult.rows.length === 0) return res.status(401).json("Invalid Credential");
 

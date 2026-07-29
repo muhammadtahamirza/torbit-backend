@@ -1,4 +1,6 @@
 const { pool, transporter, googleClient } = require("../../config/db.js");
+// NOTE: Have to move from calling direct queries to using ORM for database quries, it prevents security risks, for details search: sql injectoin
+
 
 // Path 1: The Request (Send OTP to the target email)
 const requestEmailUpgrade = async (req, res) => {
@@ -11,6 +13,7 @@ const requestEmailUpgrade = async (req, res) => {
 
   try {
     // --- SAFETY CHECK: Is this FAST email already taken by someone else? ---
+		// TODO: replace with ORM prisma query
     const emailCheck = await pool.query("SELECT user_id FROM users WHERE email = $1", [newEmail]);
     if (emailCheck.rows.length > 0) {
       return res.status(400).json("This campus email is already registered to another account.");
@@ -18,7 +21,7 @@ const requestEmailUpgrade = async (req, res) => {
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     const expiry = new Date(Date.now() + 10 * 60000); // 10 mins
-
+			// TODO: replace with ORM prisma query
     await pool.query(
       "UPDATE users SET otp_code = $1, otp_expiry = $2 WHERE user_id = $3",
       [otp, expiry, userId]
@@ -43,6 +46,7 @@ const finalizeEmailUpgrade = async (req, res) => {
   const userId = req.user.user_id;
 
   try {
+		// TODO: replace with ORM prisma query
     const result = await pool.query("SELECT * FROM users WHERE user_id = $1", [userId]);
     const user = result.rows[0];
 
@@ -51,11 +55,12 @@ const finalizeEmailUpgrade = async (req, res) => {
     }
 
     // --- FINAL CHECK: Re-verify availability to prevent race conditions ---
+		// TODO: replace with ORM prisma query
     const emailCheck = await pool.query("SELECT user_id FROM users WHERE email = $1 AND user_id != $2", [newEmail, userId]);
     if (emailCheck.rows.length > 0) {
       return res.status(400).json("This email was claimed by another user during verification.");
     }
-
+		// TODO: replace with ORM prisma query
     await pool.query(
       "UPDATE users SET email = $1, otp_code = NULL, otp_expiry = NULL WHERE user_id = $2",
       [newEmail, userId]
@@ -77,7 +82,7 @@ const googleAuthUpdate = async (req, res) => {
       idToken: token,
       audience: process.env.GOOGLE_CLIENT_ID,
     });
-    
+
     const { email, sub: googleId } = ticket.getPayload();
 
     if (!email.endsWith("nu.edu.pk")) {
@@ -85,11 +90,12 @@ const googleAuthUpdate = async (req, res) => {
     }
 
     // --- SAFETY CHECK: Check if this Google email is already used by another ID ---
+		// TODO: replace with ORM prisma query
     const emailCheck = await pool.query("SELECT user_id FROM users WHERE email = $1 AND user_id != $2", [email, loggedInUserId]);
     if (emailCheck.rows.length > 0) {
       return res.status(400).json("This Google account is already linked to another Torbit user.");
     }
-
+		// TODO: replace with ORM prisma query
     await pool.query(
       "UPDATE users SET email = $1, google_id = $2 WHERE user_id = $3",
       [email, googleId, loggedInUserId]

@@ -8,9 +8,6 @@ const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
 });
 
-
-
-
 // using free gmail id to send otps
 const transporter = nodemailer.createTransport({
   service: "gmail",

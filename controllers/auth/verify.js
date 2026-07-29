@@ -1,18 +1,21 @@
 const jwt = require("jsonwebtoken");
 const { pool } = require("../../config/db.js");
+// NOTE: Have to move from calling direct queries to using ORM for database quries, it prevents security risks, for details search: sql injectoin
+
 
 const verify = async (req, res) => {
   const { email, otp } = req.body;
 
   try {
+		// TODO: replace with ORM prisma query
     const result = await pool.query("SELECT * FROM users WHERE email = $1", [email]);
     if (result.rows.length === 0) return res.status(400).json("User not found");
-    
+
     const user = result.rows[0];
 
     if (user.otp_code !== otp) return res.status(400).json("Invalid OTP");
     if (new Date() > new Date(user.otp_expiry)) return res.status(400).json("OTP Expired");
-
+		// TODO: replace with ORM prisma query
     await pool.query(
       "UPDATE users SET is_verified = TRUE, otp_code = NULL, otp_expiry = NULL WHERE email = $1",
       [email]

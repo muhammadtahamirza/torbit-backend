@@ -1,5 +1,8 @@
 const jwt = require("jsonwebtoken");
 const { pool, googleClient } = require("../../config/db.js");
+// NOTE: Have to move from calling direct queries to using ORM for database quries, it prevents security risks, for details search: sql injectoin
+
+
 
 const googleAuth = async (req, res) => {
   const { token } = req.body;
@@ -9,28 +12,30 @@ const googleAuth = async (req, res) => {
       idToken: token,
       audience: process.env.GOOGLE_CLIENT_ID,
     });
-    
-    const { email, name, sub: googleId } = ticket.getPayload();
 
+    const { email, name, sub: googleId } = ticket.getPayload();
+		// TODO: replace with ORM prisma query
      let user = await pool.query("SELECT * FROM users WHERE email = $1", [email]);
 
     if (user.rows.length === 0) {
+				// TODO: replace with ORM prisma query
        user = await pool.query(
         "INSERT INTO users (name, email, google_id, is_verified) VALUES ($1, $2, $3, TRUE) RETURNING *",
         [name, email, googleId]
       );
     } else {
        if (!user.rows[0].google_id) {
+				// TODO: replace with ORM prisma query
          user = await pool.query(
-           "UPDATE users SET google_id = $1, is_verified = TRUE WHERE email = $2 RETURNING *", 
+           "UPDATE users SET google_id = $1, is_verified = TRUE WHERE email = $2 RETURNING *",
            [googleId, email]
          );
       }
     }
 
      const jwtToken = jwt.sign(
-      { user_id: user.rows[0].user_id }, 
-      process.env.JWT_SECRET, 
+      { user_id: user.rows[0].user_id },
+      process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
 

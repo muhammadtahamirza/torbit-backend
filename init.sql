@@ -1,8 +1,11 @@
 -- ====================================================
 -- 1. TABLE STRUCTURES & SEQUENCES
 -- ====================================================
+--NOTE, this sql query is used to setup the initial tables for your postegres db container when you run docker compose
+--see how you can use ORM for table creation, and use prisma for all table models
+-- TODO: you gonna shift to ORMs from sql queries good luck ..
 
--- TODOS: you gonna shift to ORMs from sql queries good luck ..
+
 CREATE TABLE public.offers (
     offer_id integer NOT NULL,
     owner_id integer,

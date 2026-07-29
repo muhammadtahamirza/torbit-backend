@@ -12,6 +12,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
+      # TODO, after successfull data migration by using ORM - prisma, there is no need for init.sql, prisma will take care of table creations
       # Automatically initializes your clean table structures and mock data on boot
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
       # Persists mock data on the student's machine even if they stop the container

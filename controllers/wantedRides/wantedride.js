@@ -1,10 +1,13 @@
 const { pool } = require("../../config/db.js");
+// NOTE: Have to move from calling direct queries to using ORM for database quries, it prevents security risks, for details search: sql injectoin
+
 
 // 1. Post a Wanted Ride (Student)
 const postWantedRide = async (req, res) => {
     const { pickup_points, departure_time, arrival_time, monthly_budget, seats_needed, destination } = req.body;
     const student_id = req.user.user_id;
     try {
+		// TODO: replace with ORM prisma query
         await pool.query(
             "INSERT INTO wanted_rides (student_id, pickup_points, departure_time, arrival_time, monthly_budget, seats_needed, destination) VALUES ($1, $2, $3, $4, $5, $6, $7)",
             [student_id, JSON.stringify(pickup_points), departure_time, arrival_time, monthly_budget, seats_needed, destination || 'FAST CFD Campus']
@@ -20,12 +23,13 @@ const updateWantedRide = async (req, res) => {
     const { id } = req.params;
     const { pickup_points, departure_time, arrival_time, monthly_budget, seats_needed, status } = req.body;
     try {
+		// TODO: replace with ORM prisma query
         await pool.query(
-            `UPDATE wanted_rides 
-             SET pickup_points = COALESCE($1, pickup_points), 
-                 departure_time = COALESCE($2, departure_time), 
-                 arrival_time = COALESCE($3, arrival_time), 
-                 monthly_budget = COALESCE($4, monthly_budget), 
+            `UPDATE wanted_rides
+             SET pickup_points = COALESCE($1, pickup_points),
+                 departure_time = COALESCE($2, departure_time),
+                 arrival_time = COALESCE($3, arrival_time),
+                 monthly_budget = COALESCE($4, monthly_budget),
                  seats_needed = COALESCE($5, seats_needed),
                  status = COALESCE($6, status)
              WHERE wanted_id = $7 AND student_id = $8`,
@@ -38,18 +42,19 @@ const updateWantedRide = async (req, res) => {
 };
 
 
-// 3. Browse Wanted Rides 
+// 3. Browse Wanted Rides
 const browseWantedRides = async (req, res) => {
     try {
+		// TODO: replace with ORM prisma query
         const result = await pool.query(
-            `SELECT 
-                wr.*, 
-                u.name as student_name, 
+            `SELECT
+                wr.*,
+                u.name as student_name,
                 u.contact as student_contact,
-                u.gender as student_gender, 
+                u.gender as student_gender,
                 u.email as student_email
-             FROM wanted_rides wr 
-             JOIN users u ON wr.student_id = u.user_id 
+             FROM wanted_rides wr
+             JOIN users u ON wr.student_id = u.user_id
              ORDER BY wr.created_at DESC`
         );
         res.json(result.rows);
@@ -65,6 +70,7 @@ const sendRideRequest = async (req, res) => {
     const { wanted_id } = req.body;
     const driver_id = req.user.user_id;
     try {
+		// TODO: replace with ORM prisma query
         await pool.query(
             "INSERT INTO wanted_ride_requests (wanted_id, driver_id) VALUES ($1, $2)",
             [wanted_id, driver_id]
@@ -84,13 +90,14 @@ const getRequestStatus = async (req, res) => {
   const user_id = req.user.user_id;
 
   try {
+		// TODO: replace with ORM prisma query
     const result = await pool.query(
-      `SELECT 
-        wr.wanted_id, 
-        wr.student_id, 
-        wr.destination, 
+      `SELECT
+        wr.wanted_id,
+        wr.student_id,
+        wr.destination,
         wr.status AS post_status,
-        wrr.request_id, 
+        wrr.request_id,
         wrr.status AS request_status,
         wrr.driver_id,
         -- Student Info (Owner of the post)
@@ -98,7 +105,7 @@ const getRequestStatus = async (req, res) => {
         u_student.email AS student_email,
         u_student.contact AS student_contact,
         -- Driver Info (Person offering the ride)
-        u_driver.name AS driver_name, 
+        u_driver.name AS driver_name,
         u_driver.contact AS driver_contact,
         u_driver.email AS driver_email
       FROM wanted_rides wr
@@ -124,9 +131,12 @@ const respondToRequest = async (req, res) => {
     const student_id = req.user.user_id;
 
     try {
+
         // 1. SECURITY CHECK: Ensure the logged-in student owns the Wanted Ride post
+
+		// TODO: replace with ORM prisma query
         const check = await pool.query(
-            `SELECT wr.student_id, wr.wanted_id 
+            `SELECT wr.student_id, wr.wanted_id
              FROM wanted_ride_requests wrr
              JOIN wanted_rides wr ON wrr.wanted_id = wr.wanted_id
              WHERE wrr.request_id = $1`,
@@ -134,22 +144,25 @@ const respondToRequest = async (req, res) => {
         );
 
         if (check.rows.length === 0) return res.status(404).json("Request not found");
-        
+
         // If the logged-in user is NOT the student who created the post
         if (check.rows[0].student_id !== student_id) {
             return res.status(403).json("Access Denied: You do not own this requirement");
         }
 
         // 2. EXECUTE STATUS UPDATE
+		// TODO: replace with ORM prisma query
+
         const result = await pool.query(
             "UPDATE wanted_ride_requests SET status = $1 WHERE request_id = $2 RETURNING wanted_id",
             [status, request_id]
         );
-        
+
         // 3. AUTO-CLOSE POST: If student accepts a driver, close the monthly requirement
         if (status === 'accepted') {
+		// TODO: replace with ORM prisma query
             await pool.query(
-                "UPDATE wanted_rides SET status = 'closed' WHERE wanted_id = $1", 
+                "UPDATE wanted_rides SET status = 'closed' WHERE wanted_id = $1",
                 [result.rows[0].wanted_id]
             );
         }
@@ -164,9 +177,10 @@ const respondToRequest = async (req, res) => {
 const getMyWantedRides = async (req, res) => {
   const student_id = req.user.user_id; // Extract from authenticate middleware
   try {
+		// TODO: replace with ORM prisma query
     const result = await pool.query(
-      `SELECT * FROM wanted_rides 
-       WHERE student_id = $1 
+      `SELECT * FROM wanted_rides
+       WHERE student_id = $1
        ORDER BY created_at DESC`,
       [student_id]
     );

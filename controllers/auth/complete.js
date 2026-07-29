@@ -1,4 +1,6 @@
 const { pool } = require("../../config/db.js");
+// NOTE: Have to move from calling direct queries to using ORM for database quries, it prevents security risks, for details search: sql injectoin
+
 
 // Update Profile (Gender/Contact)
 const completeProfile = async (req, res) => {
@@ -6,6 +8,7 @@ const completeProfile = async (req, res) => {
   const { gender, contact } = req.body;
 
   try {
+		// TODO: replace with ORM prisma query
     const update = await pool.query(
       "UPDATE users SET gender = $1, contact = $2 WHERE user_id = $3 RETURNING *",
       [gender, contact, userId]
