@@ -1,6 +1,8 @@
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
+
+// for secured pages, post rides
 const authenticate = (req, res, next) => {
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];

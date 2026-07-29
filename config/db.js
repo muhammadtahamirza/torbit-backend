@@ -3,11 +3,15 @@ const nodemailer = require("nodemailer");
 const { OAuth2Client } = require('google-auth-library');
 require("dotenv").config();
 
+//(in dev you use local postgreSQL)
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
 });
 
 
+
+
+// using free gmail id to send otps
 const transporter = nodemailer.createTransport({
   service: "gmail",
   secure: false,
@@ -19,6 +23,8 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+
+// google auth
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 

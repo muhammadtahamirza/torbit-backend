@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:17-alpine
+    container_name: torbit_postgres_local
+    restart: always
+    environment:
+      POSTGRES_USER: torbit_user
+      POSTGRES_PASSWORD: torbit_password
+      POSTGRES_DB: torbit_local
+    ports:
+      - "5432:5432"
+    volumes:
+      # Automatically initializes your clean table structures and mock data on boot
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      # Persists mock data on the student's machine even if they stop the container
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
