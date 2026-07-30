@@ -1,4 +1,4 @@
-# 🚗 Torbit — Pakistan's Campus Carpooling Platform
+# Torbit — Pakistan's Campus Carpooling Platform
 
 Torbit is a community-driven, **open-source carpooling and fuel-sharing web app** built for university students. It started at FAST-NU to help students traveling similar routes team up, split fuel costs, and make daily campus commutes cheaper and easier.
 
@@ -6,7 +6,7 @@ Torbit is a community-driven, **open-source carpooling and fuel-sharing web app*
 
 ---
 
-## 🎯 Our Vision
+## Our Vision
 
 We're starting with the FAST community, but the goal is bigger: bring Torbit to **every major university in Pakistan**. To get there, we're moving from a free-tier serverless setup to a proper VPS-based architecture that can handle nationwide student traffic.
 
@@ -27,7 +27,7 @@ Torbit is built on the PERN stack — a great sandbox for students who want real
 
 ---
 
-## 📦 Repositories
+## Repositories
 
 Torbit is split across two repos:
 
@@ -38,7 +38,7 @@ Torbit is split across two repos:
 
 ---
 
-## 🚀 Why Contribute?
+## Why Contribute?
 
 Torbit isn't a toy project — it's a **live app used by real students**. Contributing here gives you:
 
@@ -50,26 +50,26 @@ New to full-stack dev? No problem — see [CONTRIBUTING.md](./CONTRIBUTING.md) f
 
 ---
 
-## 🗺️ Project Roadmap & Open Tasks
+## Project Roadmap & Open Tasks
 
 These tracks are all live as GitHub Issues — pick one and jump in!
 
-### 📊 Database & ORM
+### Database & ORM
 - [ ] Set up and initialize Prisma ORM in the project
 - [ ] Migrate the database schema from raw SQL to Prisma Schema models
 - [ ] Refactor backend controllers to use Prisma queries instead of raw `pool.query()` calls
 
-### 🚗 Ride Intelligence & Matching
+### Ride Intelligence & Matching
 - [ ] Build a notification/alert engine for new relevant routes
 - [ ] Implement location-based matching to auto-suggest close-proximity routes
 - [ ] Redesign the booking flow for a smoother driver ↔ passenger connection
 
-### 🧪 Quality Assurance & Testing
+### Quality Assurance & Testing
 - [ ] Write unit, mock, and integration tests
 - [ ] Add code coverage requirements for new features
 - [ ] Set up GitHub Actions CI/CD to automatically validate incoming code
 
-### 🎨 UI/UX
+### UI/UX
 - [ ] Replace placeholder AI-generated styling with a polished, intuitive mobile-first UI
 
 ---
@@ -85,6 +85,12 @@ Let's make daily campus travel smart, safe, and collaborative — together.
 
 ---
 
-## 📄 License
+## License
 
 This project is open source. Check the repository's `LICENSE` file for details.
+
+---
+## Contributors 
+<a href="https://github.com/muhammadtahamirza/torbit-backend/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=muhammadtahamirza/torbit-backend" />
+</a>
