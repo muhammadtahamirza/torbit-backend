@@ -7,5 +7,6 @@ If you're completing your first-contribution issue, add your name below in alpha
 | Name | GitHub Username | University |
 |---|---|---|
 | Jane Doe | [@janedoe](https://github.com/janedoe) | FAST-NU |
+| Mahida | [@mahyda07](https://github.com/mahyda07) | FAST NUCES |
 
 <!-- Add your row above this line, keep the table sorted alphabetically by name -->
