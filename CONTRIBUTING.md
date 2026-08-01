@@ -104,28 +104,39 @@ cd <repo-name>
 ```
 
 ### 3. Create a Feature Branch
-Never commit directly to `main`. Create a branch named after the task you're working on:
+Never commit directly to `main`. Branch names must start with one of the following prefixes, followed by a short, hyphenated description of the task:
+
+| Prefix | When to use it | Example |
+|---|---|---|
+| `feat/` | Adding a new feature | `feat/add-endpoint-user` |
+| `fix/` | Fixing a bug or crash | `fix/mobile-nav-crash` |
+| `docs/` | Editing docs/markdown | `docs/update-readme-setup` |
+
 ```bash
-git checkout -b feature/your-feature-name
-# example: git checkout -b feature/prisma-user-migration
+git checkout -b feat/your-feature-name
+# example: git checkout -b feat/prisma-user-migration
 ```
 
 ### 4. Make Your Changes
 Pick an open issue from the [README roadmap](./README.md#-project-roadmap--open-tasks) or the GitHub Issues tab, and start coding.
 
 ### 5. Write a Clean Commit Message
-We follow semantic commit prefixes:
+We follow semantic commit prefixes with a scope, in this format:
+
+```
+<type>(<topic>): <brief description>
+```
 
 | Prefix | When to use it | Example |
 |---|---|---|
-| `feat:` | Adding a new feature | `feat: calculate location proximity matches` |
-| `fix:` | Fixing a bug or crash | `fix: mobile navigation menu crash` |
-| `docs:` | Editing docs/markdown | `docs: update setup steps for windows` |
+| `feat(topic):` | Adding a new feature | `feat(users): calculate location proximity matches` |
+| `fix(topic):` | Fixing a bug or crash | `fix(nav): mobile navigation menu crash` |
+| `docs(topic):` | Editing docs/markdown | `docs(readme): improve resources readme` |
 
 ```bash
 git add .
-git commit -m "feat: migrate raw SQL authentication paths to Prisma ORM"
-git push origin feature/your-feature-name
+git commit -m "feat(auth): migrate raw SQL authentication paths to Prisma ORM"
+git push origin feat/your-feature-name
 ```
 
 ### 6. Open a Pull Request
@@ -144,8 +155,9 @@ git push origin feature/your-feature-name
 Before opening a PR, double check:
 
 - [ ] My branch is based on the latest `main`
+- [ ] My branch name starts with `feat/`, `fix/`, or `docs/`
 - [ ] My code runs locally without errors
-- [ ] I followed the commit message format (`feat:`, `fix:`, `docs:`)
+- [ ] I followed the commit message format (`feat(topic):`, `fix(topic):`, `docs(topic):`)
 - [ ] I described my changes clearly in the PR
 - [ ] I didn't commit `.env` or any secrets
 
