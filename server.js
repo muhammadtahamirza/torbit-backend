@@ -7,6 +7,7 @@ const request = require("./routes/requests.js");
 const wantedrides = require("./routes/wantedrideRoutes.js");
 const { pool } = require("./config/db.js");
 const app = express();
+const todoRoutes = require("./routes/todoRoutes");
 
 app.use(cors());
 app.use(express.json());
@@ -19,7 +20,7 @@ app.use(request);
 app.use(wantedrides);
 
 
-
+app.use("/api/todos", todoRoutes);
 
 
 
