@@ -10,3 +10,11 @@ dist/
 build/
 
 todo.md
+/generated/prisma
+/src/generated/prisma
+
+# Prisma AI Agent Skills
+.claude/skills/
+.windsurf/skills/
+.agents/skills/
+skills-lock.json

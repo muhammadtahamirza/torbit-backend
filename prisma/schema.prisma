@@ -1,0 +1,83 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model offers {
+  offer_id           Int        @id @default(autoincrement())
+  owner_id           Int?
+  car_name           String     @db.VarChar(255)
+  seats_available    Int
+  monthly_per_person Decimal    @db.Decimal
+  pickup_points      Json
+  destination        String?    @default("CFD Campus") @db.VarChar(255)
+  departure_time     DateTime   @db.Time(6)
+  arrival_time       DateTime   @db.Time(6)
+  created_at         DateTime?  @default(now()) @db.Timestamp(6)
+  status             String?    @default("active") @db.VarChar(20)
+  users              users?     @relation(fields: [owner_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)
+  requests           requests[]
+}
+
+model requests {
+  request_id   Int       @id @default(autoincrement())
+  offer_id     Int?
+  passenger_id Int?
+  status       String?   @default("pending") @db.VarChar(20)
+  created_at   DateTime? @default(now()) @db.Timestamp(6)
+  offers       offers?   @relation(fields: [offer_id], references: [offer_id], onDelete: Cascade, onUpdate: NoAction)
+  users        users?    @relation(fields: [passenger_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([offer_id, passenger_id])
+}
+
+model users {
+  user_id              Int                    @id @default(autoincrement())
+  name                 String                 @db.VarChar(100)
+  gender               String?                @db.VarChar(20)
+  email                String                 @unique @db.VarChar(255)
+  password             String?                @db.VarChar(255)
+  otp_code             String?                @db.VarChar(6)
+  otp_expiry           DateTime?              @db.Timestamp(6)
+  is_verified          Boolean?               @default(false)
+  google_id            String?                @db.VarChar(255)
+  created_at           DateTime?              @default(now()) @db.Timestamp(6)
+  contact              String?                @db.VarChar(20)
+  offers               offers[]
+  requests             requests[]
+  wanted_ride_requests wanted_ride_requests[]
+  wanted_rides         wanted_rides[]
+}
+
+model wanted_ride_requests {
+  request_id   Int           @id @default(autoincrement())
+  wanted_id    Int?
+  driver_id    Int?
+  status       String?       @default("pending") @db.VarChar(20)
+  created_at   DateTime?     @default(now()) @db.Timestamp(6)
+  users        users?        @relation(fields: [driver_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)
+  wanted_rides wanted_rides? @relation(fields: [wanted_id], references: [wanted_id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([wanted_id, driver_id])
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model wanted_rides {
+  wanted_id            Int                    @id @default(autoincrement())
+  student_id           Int?
+  pickup_points        Json
+  destination          String?                @default("FAST CFD Campus") @db.VarChar(255)
+  departure_time       DateTime               @db.Time(6)
+  arrival_time         DateTime               @db.Time(6)
+  monthly_budget       Decimal                @db.Decimal
+  seats_needed         Int?                   @default(1)
+  status               String?                @default("active") @db.VarChar(20)
+  created_at           DateTime?              @default(now()) @db.Timestamp(6)
+  wanted_ride_requests wanted_ride_requests[]
+  users                users?                 @relation(fields: [student_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)
+}
