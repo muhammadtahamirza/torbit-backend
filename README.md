@@ -91,6 +91,4 @@ This project is open source. Check the repository's `LICENSE` file for details.
 
 ---
 ## Contributors 
-<a href="https://github.com/muhammadtahamirza/torbit-backend/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=muhammadtahamirza/torbit-backend" />
-</a>
+<!-- readme: contributors -start --> <!-- readme: contributors -end -->
