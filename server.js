@@ -5,7 +5,7 @@ const authRoutes = require("./routes/authRoutes.js");
 const offerRoutes = require("./routes/offerRoutes.js");
 const request = require("./routes/requests.js");
 const wantedrides = require("./routes/wantedrideRoutes.js");
-const { pool } = require("./config/db.js");
+const { pool, connectDB } = require("./config/db.js");
 const app = express();
 
 app.use(cors());
@@ -32,10 +32,13 @@ app.listen(5000, async () => {
 
     try {
     // This forces the pool to open a connection immediately
-    await pool.query('SELECT NOW()');
-    console.log('Database connected successfully!');
+    await pool.query('SELECT NOW()');  // todo: needed to by removed once migration done
+    console.log('postgres, Database connected successfully!');
   } catch (err) {
     console.error('Database connection failed on startup:', err.message);
   }
+  	// newly prisma migration
+  	await connectDB()  // prisma, db connection
+
 
 });
