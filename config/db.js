@@ -1,7 +1,8 @@
 const { Pool } = require("pg");
 const nodemailer = require("nodemailer");
 const { OAuth2Client } = require('google-auth-library');
-const { PrismaClient } = require('@prisma/client');
+const { PrismaClient } = require('../generated/prisma');
+const { PrismaPg } = require('@prisma/adapter-pg');
 
 require("dotenv").config();
 //(in dev you use local postgreSQL)
@@ -31,7 +32,10 @@ const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
  * Prisma automatically reads the 'DATABASE_URL' environment variable from your .env file.
  * It manages connection pooling under the hood by default.
  */
+
+const adapter= new PrismaPg({ connectionString: process.env.DATABASE_URL });
 const prisma = new PrismaClient({
+  adapter,
   // 'query' can be added here if you want to print every SQL query to your terminal
   log: ['error', 'warn'],
 });
