@@ -20,6 +20,7 @@ CREATE TABLE public.offers (
     status character varying(20) DEFAULT 'active'::character varying,
     CONSTRAINT pickup_points_array CHECK ((jsonb_typeof(pickup_points) = 'array'::text))
 );
+ALTER TABLE ONLY public.offers ADD COLUMN notes TEXT;
 
 CREATE SEQUENCE public.offers_offer_id_seq
     AS integer
