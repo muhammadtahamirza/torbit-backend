@@ -1,4 +1,4 @@
-const { pool } = require("../../config/db.js");
+const { pool, prisma } = require("../../config/db.js");
 // NOTE: Have to move from calling direct queries to using ORM for database quries, it prevents security risks, for details search: sql injectoin
 
 
@@ -20,17 +20,24 @@ const getUserProfile = async (req, res) => {
 // 1. POST /offers (Create)
 const createOffer = async (req, res) => {
   const owner_id = req.user.user_id;
-  const { car_name, seats_available, monthly_per_person, pickup_points, destination, departure_time, arrival_time } = req.body;
+  const { car_name, seats_available, monthly_per_person, pickup_points, destination, departure_time, arrival_time, notes } = req.body;
 
   try {
-    const newOffer = await pool.query(
-      `INSERT INTO offers (owner_id, car_name, seats_available, monthly_per_person, pickup_points, destination, departure_time, arrival_time)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-       RETURNING *`,
-      [owner_id, car_name, seats_available, monthly_per_person, JSON.stringify(pickup_points), destination, departure_time, arrival_time]
-    );
+    const newOffer = await prisma.offers.create({
+      data: {
+        owner_id,
+        car_name,
+        seats_available,
+        monthly_per_person,
+        pickup_points,
+        destination,
+        departure_time,
+        arrival_time,
+        notes,
+      },
+    });
 
-    res.json(newOffer.rows[0]);
+    res.json(newOffer);
   } catch (err) {
     console.error(err);
     res.status(500).json("Server Error");
@@ -145,7 +152,7 @@ const updateOffer = async (req, res) => {
     );
 
     res.json(updatedOffer.rows[0]);
-  } catch (err) {
+controllers/offers/offerController.js  } catch (err) {
     console.error("Update Error:", err);
     res.status(500).json("Server Error");
   }
