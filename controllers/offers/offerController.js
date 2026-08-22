@@ -1,4 +1,4 @@
-const { pool } = require("../../config/db.js");
+const { pool,prisma } = require("../../config/db.js");
 // NOTE: Have to move from calling direct queries to using ORM for database quries, it prevents security risks, for details search: sql injectoin
 
 
@@ -77,23 +77,35 @@ const getAllOffers = async (req, res) => {
 const getOfferById = async (req, res) => {
   const { id } = req.params;
   try {
-    const offer = await pool.query(
-      `SELECT offers.*, users.name as driver_name, users.email, users.contact as driver_contact
-       FROM offers
-       JOIN users ON offers.owner_id = users.user_id
-       WHERE offer_id = $1`,
-      [id]
-    );
+    const offer = await prisma.offers.findUnique({
+      where: { offer_id: Number(id) },
+      include: {
+        users: {
+          select: {
+            name: true,
+            email: true,
+            contact: true,
+          },
+        },
+      },
+    });
 
-    if (offer.rows.length === 0) return res.status(404).json("Offer not found");
+    if (!offer) return res.status(404).json("Offer not found");
 
-    res.json(offer.rows[0]);
+    const { users, ...offerData } = offer;
+    const result = {
+      ...offerData,
+      driver_name: users?.name,
+      email: users?.email,
+      driver_contact: users?.contact,
+    };
+
+    res.json(result);
   } catch (err) {
     console.error(err);
     res.status(500).json("Server Error");
   }
 };
-
 // 5. PUT /offers/:id (Update)
 // 5. PUT /offers/:id (Update & Soft Delete)
 const updateOffer = async (req, res) => {
